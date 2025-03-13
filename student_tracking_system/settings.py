@@ -4,6 +4,8 @@
 import os
 from pathlib import Path
 
+from django.conf.global_settings import CSRF_TRUSTED_ORIGINS
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 #通过环境变量加载 SECRET_KEY
@@ -11,7 +13,13 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-please_replace
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'studenttrackingsystem-still-fog-4927.fly.dev',
+    'localhost',
+    '127.0.0.1'
+]
+
+CSRF_TRUSTED_ORIGINS = ['https://studenttrackingsystem-still-fog-4927.fly.dev']
 
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -62,7 +70,7 @@ DATABASES = {
         'NAME': 'mydatabase',
         'USER': 'zhongyuezhao',
         'PASSWORD': '123456',
-        'HOST': '130.209.157.51',
+        'HOST': 'my-mysql-summer-star-7401.internal',
         'PORT': '3306',
         'OPTIONS': {
             'charset': 'utf8mb4',  # 让 MySQL 支持 utf8mb4 编码
@@ -115,7 +123,7 @@ EMAIL_HOST_PASSWORD = 'hdiimrnidrzmcjbh'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-INSTALLED_APPS += ["dbbackup"]  # 添加 dbbackup
-
-DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
-DBBACKUP_STORAGE_OPTIONS = {"location": "/path/to/backup/"}  # 备份存放路径
+# INSTALLED_APPS += ["dbbackup"]  # 添加 dbbackup
+#
+# DBBACKUP_STORAGE = "django.core.files.storage.FileSystemStorage"
+# DBBACKUP_STORAGE_OPTIONS = {"location": "/path/to/backup/"}  # 备份存放路径
