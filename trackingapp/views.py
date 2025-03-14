@@ -532,7 +532,7 @@ def checkin_view(request):
     """
     if request.method == 'POST':
         user = request.user
-        allowed_distance = 100  # 允许的签到范围（米）
+        allowed_distance = 500  # 允许的签到范围（米）
 
         # 获取前端传来的数据
         course_id = request.POST.get('course_id')
@@ -556,7 +556,7 @@ def checkin_view(request):
             # 检查是否在允许范围内
         for loc in locations:
             distance = get_distance(latitude, longitude, float(loc.latitude), float(loc.longitude))
-            if distance <= allowed_distance:  # 允许 100 米范围内签到
+            if distance <= allowed_distance:  # 允许 500 米范围内签到
                 AttendanceRecord.objects.create( course=course,  student=user, location=loc,date=timezone.now().date(), status='P')
                 return JsonResponse({"message": "Check-in successful!"})
 
