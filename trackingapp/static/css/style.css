@@ -1,4 +1,4 @@
-/* 全局样式 */
+/* Total style */
 :root {
     --primary-color: #4361ee;
     --secondary-color: #3f37c9;
@@ -16,7 +16,7 @@ body {
     line-height: 1.6;
 }
 
-/* 导航栏样式 */
+/* Navigation bar style */
 .navbar {
     padding: 1rem 0;
 }
@@ -69,7 +69,7 @@ body {
     border-color: var(--secondary-color);
 }
 
-/* 卡片和阴影效果 */
+/* Card and shadow effects */
 .shadow-sm {
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
 }
@@ -84,7 +84,7 @@ body {
     transform: translateY(-5px);
 }
 
-/* 表单样式 */
+/* Form Styles */
 .form-control {
     padding: 0.75rem 1rem;
     border-radius: 0.5rem;
@@ -96,7 +96,7 @@ body {
     box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
 }
 
-/* 警告提示样式 */
+/*   Warning Tip Style */
 .alert {
     border: none;
     border-radius: 0.5rem;
@@ -118,7 +118,7 @@ body {
     color: var(--info-color);
 }
 
-/* 表格样式 */
+/* Table styles */
 .table {
     border-radius: 0.5rem;
     overflow: hidden;
@@ -136,12 +136,12 @@ body {
     vertical-align: middle;
 }
 
-/* 内容包装器 */
+/* content packager */
 .content-wrapper {
     min-height: calc(100vh - 300px);
 }
 
-/* 响应式调整 */
+/* Responsive Adjustment */
 @media (max-width: 768px) {
     .navbar {
         padding: 0.5rem 0;
@@ -157,7 +157,7 @@ body {
     }
 }
 
-/* 动画效果 */
+/* animation effect */
 @keyframes fadeIn {
     from {
         opacity: 0;
