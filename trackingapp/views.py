@@ -40,7 +40,7 @@ from .models import User, Course, Announcement, AttendanceRecord, Grade, LoginLo
 
 
 ###############################
-# 辅助函数
+# helper function
 ###############################
 def generate_6_digit_code():
     return ''.join(random.choices(string.digits, k=6))
@@ -64,7 +64,7 @@ def calculate_user_avg_attendance(user: User) -> float:
 
 def calculate_teacher_avg_attendance(user: User) -> float:
     """
-    计算某位老师教授的所有课程的平均出勤率。
+   Calculate the average attendance for all courses taught by a particular instructor.
     """
     courses = Course.objects.filter(teacher=user)
     qs = AttendanceRecord.objects.filter(course__in=courses)
@@ -76,8 +76,8 @@ def calculate_teacher_avg_attendance(user: User) -> float:
 
 def count_unread_announcements(user: User) -> int:
     """
-    统计某用户的未读公告数。
-    逻辑：公告未过期 + AnnouncementReadStatus 中 has_read=False
+     Counts the number of unread announcements for a user.
+     Logic: announcement not expired + AnnouncementReadStatus in has_read=False
     """
     now = timezone.now()
     valid_anns = Announcement.objects.filter(Q(valid_until__gt=now) | Q(valid_until__isnull=True))
@@ -95,7 +95,7 @@ def is_teacher(user):
 
 
 ###############################
-# MFA登录 / 注册 / 首页
+# MFA Login / Register / Home
 ###############################
 def custom_login_view(request):
     if request.method == 'POST':
@@ -159,14 +159,14 @@ def home_view(request):
 
 
 ###############################
-# 不同角色Dashboard
+# difference role Dashboard
 ###############################
 @login_required
 def dashboard_admin_view(request):
     if request.user.role != 'ADMIN':
         return redirect('/')
 
-    # 全校平均出勤率
+    # Average school-wide attendance
     total_attendance = AttendanceRecord.objects.count()
     if total_attendance == 0:
         avg_attendance = 0.0
@@ -174,10 +174,10 @@ def dashboard_admin_view(request):
         present_count = AttendanceRecord.objects.filter(status='P').count()
         avg_attendance = round(present_count / total_attendance * 100, 1)
 
-    # 未读公告数
+    # Number of unread announcements
     unread_ann_count = count_unread_announcements(request.user)
 
-    # 统计示例
+    # Statistical examples
     total_students = User.objects.filter(role='STUDENT').count()
     total_teachers = User.objects.filter(role='TEACHER').count()
     total_courses = Course.objects.count()
@@ -201,7 +201,7 @@ def dashboard_teacher_view(request):
     avg_attendance = calculate_teacher_avg_attendance(request.user)
     unread_ann_count = count_unread_announcements(request.user)
 
-    # 统计“在读学生”
+    # Statistics on ‘current students’
     distinct_students_count = User.objects.filter(
         role='STUDENT',
         courses__in=courses
@@ -244,7 +244,7 @@ def role_dashboard_redirect_view(request):
 
 
 ###############################
-# 课程管理：允许学生选课
+# Course management: allowing students to select courses
 ###############################
 @login_required
 def manage_courses_view(request):
@@ -280,7 +280,7 @@ def manage_courses_view(request):
         })
 
     elif user.role == 'STUDENT':
-        # 学生可查看全部课程，并可选/退课
+        # Students can view all courses and select/withdraw from courses
         courses = Course.objects.all()
         if request.method == 'POST':
             action_type = request.POST.get('action_type')
@@ -335,7 +335,7 @@ def manage_course_detail_view(request, course_id):
 
 
 ###############################
-# 公告管理
+# Announcement Management
 ###############################
 @login_required
 def announcement_list_view(request):
@@ -351,7 +351,7 @@ def announcement_list_view(request):
 @login_required
 def announcement_detail_view(request, pk):
     announcement = get_object_or_404(Announcement, pk=pk)
-    # 标记已读
+    # Mark Read
     read_obj, _ = AnnouncementReadStatus.objects.get_or_create(
         announcement=announcement,
         user=request.user
@@ -432,7 +432,7 @@ def delete_announcement_view(request, pk):
 
 
 ###############################
-# 考勤管理
+# attendance management
 ###############################
 @login_required
 def attendance_list_view(request):
@@ -462,7 +462,7 @@ def mark_attendance_view(request, course_id):
     if request.method == 'POST':
         user = request.user
         if user.role == 'STUDENT':
-            # 学生只可标记自己的考勤，并且必须已选该课程
+            # Students can only mark their own attendance and must have taken the course
             if user in course.students.all():
                 status = request.POST.get('status', 'P')
                 AttendanceRecord.objects.create(student=user, course=course, status=status)
@@ -528,13 +528,13 @@ def scan_qr_code_view(request, code):
 @login_required
 def checkin_view(request):
     """
-    GPS 地图签到
+    GPS Map Check-In
     """
     if request.method == 'POST':
         user = request.user
-        allowed_distance = 500  # 允许的签到范围（米）
+        allowed_distance = 100  # Permitted sign-on range (metres)
 
-        # 获取前端传来的数据
+        # Getting data from the front-end
         course_id = request.POST.get('course_id')
         if not course_id:
             return JsonResponse({"message": "Course is required for check-in!"}, status=400)
@@ -545,32 +545,32 @@ def checkin_view(request):
         except ValueError:
             return JsonResponse({"message": "Invalid location data!"}, status=400)
 
-         # 获取课程对象
+         # Access to course objects
         course = get_object_or_404(Course, id=course_id)
 
-        # 检查签到地点是否有效
+        # Check the validity of the sign-in location
         locations = CheckinLocation.objects.all()
         if not locations.exists():
             return JsonResponse({"message": "No check-in locations configured!"}, status=400)
 
-            # 检查是否在允许范围内
+            # Check that it is within the permissible range
         for loc in locations:
             distance = get_distance(latitude, longitude, float(loc.latitude), float(loc.longitude))
-            if distance <= allowed_distance:  # 允许 500 米范围内签到
+            if distance <= allowed_distance:  # Allow check-in within 100 metres
                 AttendanceRecord.objects.create( course=course,  student=user, location=loc,date=timezone.now().date(), status='P')
                 return JsonResponse({"message": "Check-in successful!"})
 
         return JsonResponse({"message": "Location not recognized!"}, status=400)
 
-    # 获取该学生的课程并传递到前端
+    # Get the student's course and pass it to the front end
     courses = Course.objects.filter(students=request.user)
     return render(request, 'trackingapp/checkin.html', {'courses': courses})
 
 def get_distance(lat1, lon1, lat2, lon2):
     """
-    计算两个经纬度坐标之间的距离（单位：米）
+    Calculation of the distance between two latitude and longitude coordinates (in metres)
     """
-    R = 6371000  # 地球半径（米）
+    R = 6371000  # Earth radius (metres)
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
@@ -582,7 +582,7 @@ def get_distance(lat1, lon1, lat2, lon2):
     return R * c
 
 ###############################
-# 成绩报告
+# Achievement reports
 ###############################
 @login_required
 def grade_report_view(request, course_id):
@@ -618,7 +618,7 @@ def grade_report_view(request, course_id):
 
 
 ###############################
-# 系统报告 / 个人资料
+#  System reports / Personal data
 ###############################
 @login_required
 def system_report_view(request):
@@ -659,7 +659,7 @@ def profile_view(request):
 
 
 ###############################
-# ========== 新增功能 ==========
+# ========== new feature ==========
 ###############################
 @login_required
 def system_settings_view(request):
@@ -684,24 +684,24 @@ def system_settings_view(request):
 @login_required
 def export_report_view(request):
     """
-    PDF 导出，用于管理员或教师导出考勤记录。
+   PDF export for administrators or teachers to export attendance records.
     """
     if request.user.role not in ['ADMIN', 'TEACHER']:
         raise PermissionDenied("No permission to export report")
 
-    # 设置 HTTP 响应头
+    # Set HTTP response header
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename="attendance_report.pdf"'
 
-    # 创建PDF文档
+    # Create PDF documents
     doc = SimpleDocTemplate(response, pagesize=A4)
     elements = []
     styles = getSampleStyleSheet()
 
-    # 标题
+    # Title
     elements.append(Paragraph("Attendance Report", styles['Title']))
 
-    # 表格数据
+    # table data
     data = [["Student", "Course", "Date", "Status"]]
 
     if request.user.role == 'TEACHER':
