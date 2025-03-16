@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check-in with Map</title>
 
-    <!-- 引入 Leaflet.js 地图库 -->
+    <!-- pull into Leaflet.js map library -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
@@ -17,7 +17,7 @@
 
     <h1>Location-Based Check-in</h1>
 
-    <!-- 课程选择 -->
+    <!-- Course Selection -->
     <label for="course-select">Select Course:</label>
     <select id="course-select">
         <option value="">-- Select a Course --</option>
@@ -70,10 +70,10 @@
 
             document.getElementById("status").innerHTML = `Your Location: ${latitude}, ${longitude}`;
 
-            // 更新地图位置
+            // Updated map locations
             initMap(latitude, longitude);
 
-            // 发送签到数据到 Django 服务器
+            // Send Check-In Data to Django Server
             fetch("{% url 'checkin' %}", {
                 method: "POST",
                 headers: {
@@ -83,7 +83,7 @@
                 body: new URLSearchParams({
                     latitude: latitude,
                     longitude: longitude,
-                    course_id: courseId  // ✅ 修正 body 语法错误
+                    course_id: courseId  
                 })
             })
             .then(response => response.json())
@@ -111,7 +111,7 @@
             }
         }
 
-        // 页面加载时获取位置
+        // Get position on page load
         document.addEventListener("DOMContentLoaded", () => {
             getLocation();
         });
