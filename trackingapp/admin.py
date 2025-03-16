@@ -1,5 +1,5 @@
 #################################################################
-# 文件: trackingapp/admin.py
+# file: trackingapp/admin.py
 #################################################################
 from django.contrib import admin
 from .models import User, Course, Announcement, AttendanceRecord, Grade, LoginLog
