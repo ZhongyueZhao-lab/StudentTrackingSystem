@@ -1,6 +1,6 @@
-/* 文件路径: trackingapp/static/js/scripts.js */
+/*  file path: trackingapp/static/js/scripts.js */
 
-// Toast 通知功能
+// Toast notification function
 function showToast(message, type = 'info') {
     const toastHTML = `
         <div class="toast align-items-center text-white bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
@@ -33,7 +33,7 @@ function showToast(message, type = 'info') {
     toast.show();
 }
 
-// 加载指示器
+// loading indicator
 function showLoading(show = true) {
     let loader = document.getElementById('global-loader');
     if (!loader && show) {
@@ -51,7 +51,7 @@ function showLoading(show = true) {
     }
 }
 
-// 考勤标记功能
+// Attendance marking function
 async function markAttendance() {
     try {
         const courseSelect = document.getElementById('course_id');
@@ -95,7 +95,7 @@ async function markAttendance() {
     }
 }
 
-// 生成二维码功能
+//Generate QR code function
 async function generateQRCode() {
     try {
         const courseId = document.getElementById('qr_course_id').value;
@@ -144,7 +144,7 @@ async function generateQRCode() {
     }
 }
 
-// Django CSRF Token 获取函数
+// Django CSRF Token  Get function
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -160,15 +160,15 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// 文档加载完成后的初始化
+// Initialisation after the document has been loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // 初始化所有工具提示
+    // Initialise all tooltips
     const tooltips = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     tooltips.forEach(tooltip => {
         new bootstrap.Tooltip(tooltip);
     });
 
-    // 初始化所有下拉菜单
+    // Initialise all drop-down menus
     const dropdowns = document.querySelectorAll('.dropdown-toggle');
     dropdowns.forEach(dropdown => {
         new bootstrap.Dropdown(dropdown);
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 /* NEW CODE for teacher side:
-   当教师/管理员选择了某门课程后, 只显示该course的学生 */
+   When an instructor/administrator selects a course, only students from that course are displayed */
 function filterStudentList() {
     const courseSelect = document.getElementById('course_id');
     const selectedCourseId = courseSelect ? courseSelect.value : '';
@@ -184,21 +184,21 @@ function filterStudentList() {
     const studentSelect = document.getElementById('student_id');
     if (!studentSelect) return;
 
-    // 遍历 studentSelect 下所有 <option>
+    // Iterate over all <option> under studentSelect.
     for (const opt of studentSelect.options) {
         const optCourse = opt.getAttribute('data-course');
-        // 如果 <option> 没有 data-course, 可能是占位"请选择学生", 直接显示
+        // If <option> doesn't have a data-course, it's probably a placeholder for ‘Please select a student’, which is displayed directly.
         if (!optCourse) {
             opt.hidden = false;
             continue;
         }
-        // 如果 optCourse 与 selectedCourseId 匹配, 显示; 否则隐藏
+        // If optCourse matches selectedCourseId, show; otherwise hide.
         if (optCourse === selectedCourseId) {
             opt.hidden = false;
         } else {
             opt.hidden = true;
         }
     }
-    // 重置一下下拉的选中值
+    // Reset the dropdown selections a bit
     studentSelect.value = '';
 }
