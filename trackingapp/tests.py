@@ -1,5 +1,5 @@
 #################################################################
-# 文件: trackingapp/tests.py (单元测试)
+# file: trackingapp/tests.py 
 #################################################################
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -8,7 +8,7 @@ from .models import User
 class SimpleTests(TestCase):
     def setUp(self):
         self.client = Client()
-        # 创建一个测试用户
+        # Create a test user
         self.test_user = User.objects.create_user(username='testuser', password='12345', role='STUDENT')
 
     def test_homepage_status_code(self):
@@ -17,5 +17,5 @@ class SimpleTests(TestCase):
 
     def test_login(self):
         login_success = self.client.login(username='testuser', password='12345')
-        # MFA不在此做深度测试，只验证用户名密码对即可
+        # MFA does not do in-depth testing here, just verify that the username and password are correct.
         self.assertTrue(login_success)
