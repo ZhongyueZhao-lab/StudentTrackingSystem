@@ -1,5 +1,5 @@
 #################################################################
-# 文件: student_tracking_system/asgi.py
+# file: student_tracking_system/asgi.py
 #################################################################
 import os
 from django.core.asgi import get_asgi_application
