@@ -1,5 +1,5 @@
 #################################################################
-# 文件: trackingapp/models.py
+# file: trackingapp/models.py
 #################################################################
 from django.db import models
 from django.contrib.auth.models import AbstractUser
@@ -8,7 +8,7 @@ from django.utils import timezone
 
 class AnnouncementReadStatus(models.Model):
     """
-    用于记录用户是否已读某条公告。
+    Used to record whether a user has read a particular announcement.
     """
     announcement = models.ForeignKey('Announcement', on_delete=models.CASCADE, related_name='read_status')
     user = models.ForeignKey('User', on_delete=models.CASCADE, related_name='announcement_reads')
@@ -20,7 +20,7 @@ class AnnouncementReadStatus(models.Model):
 
 
 class User(AbstractUser):
-    # 角色：ADMIN、TEACHER、STUDENT
+    #role：ADMIN、TEACHER、STUDENT
     ROLE_CHOICES = (
         ('ADMIN', 'Administrator'),
         ('TEACHER', 'Teacher'),
@@ -51,7 +51,7 @@ class Announcement(models.Model):
     important_level = models.IntegerField(default=1, help_text="1=Normal, 2=Important, 3=Urgent")
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, blank=True, null=True)
-    is_global = models.BooleanField(default=False)  # 是否全局公告(仅管理员可创建)
+    is_global = models.BooleanField(default=False)  # Whether global announcement (only administrator can create)
     created_at = models.DateTimeField(auto_now_add=True)
     valid_until = models.DateTimeField(null=True, blank=True)
 
@@ -60,13 +60,13 @@ class Announcement(models.Model):
 
 class CheckinLocation(models.Model):
     """
-    用于存储可签到的地理位置
+    Used to store geographic locations that can be checked in
     """
-    location_name = models.CharField(max_length=255, default="Unknown Location")  # 位置名称
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)  # 维度
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)  # 经度
-    radius = models.FloatField(default=100.0)  # 允许签到的半径（单位：米）
-    created_at = models.DateTimeField(auto_now_add=True)  # 记录创建时间
+    location_name = models.CharField(max_length=255, default="Unknown Location")  # Location Name
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)  
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)  
+    radius = models.FloatField(default=100.0)  # Radius of permitted check-in (in metres）
+    created_at = models.DateTimeField(auto_now_add=True)  # Record creation time
 
     def __str__(self):
         return f"{self.location_name} ({self.latitude}, {self.longitude})"
@@ -89,13 +89,13 @@ class AttendanceRecord(models.Model):
 
 class Grade(models.Model):
     """
-    用于记录多种类型成绩
+    For recording multiple types of grades
     """
     student = models.ForeignKey(User, on_delete=models.CASCADE, limit_choices_to={'role': 'STUDENT'})
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    homework_score = models.FloatField(default=0)  # 平时
-    exam_score = models.FloatField(default=0)      # 考试
-    practice_score = models.FloatField(default=0)  # 作业
+    homework_score = models.FloatField(default=0)  
+    exam_score = models.FloatField(default=0)      
+    practice_score = models.FloatField(default=0)  
 
     @property
     def total_score(self):
@@ -118,7 +118,7 @@ class LoginLog(models.Model):
 
 class SystemSetting(models.Model):
     """
-    用于存储系统级别配置，如站点名称等
+    Used to store system level configurations such as site names, etc.
     """
     site_name = models.CharField(max_length=100, default="EduTracking System")
     maintenance_mode = models.BooleanField(default=False)
